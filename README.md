@@ -35,7 +35,3 @@ After:
 - 01.jpg
 - 02.png
 - 03.pdf
-
-## License
-
-[Add your license here]
