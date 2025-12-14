@@ -33,4 +33,4 @@ def number_files_in_folder(folder_path, start_number=1):
 
 if __name__ == "__main__":
     target_folder = "./test_files"
-    number_files_in_folder(target_folder, start_number=0)
+    number_files_in_folder(target_folder, start_number=1)
