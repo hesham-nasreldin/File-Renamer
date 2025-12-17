@@ -1,11 +1,10 @@
-import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+import streamlit as st
 import os
 
 
 def number_files_in_folder(folder_path, start_number=1):
     if not os.path.isdir(folder_path):
-        messagebox.showerror("Error", f"Folder not found at '{folder_path}'")
+        st.error(f"Error: Folder not found at '{folder_path}'")
         return
     try:
         files = [
@@ -15,12 +14,10 @@ def number_files_in_folder(folder_path, start_number=1):
         ]
         files.sort()
     except Exception as e:
-        messagebox.showerror(
-            "Error", f"An error occurred while reading the directory: {e}"
-        )
+        st.error(f"An error occurred while reading the directory: {e}")
         return
 
-    messagebox.showinfo("Info", f"Found {len(files)} files to rename.")
+    st.write(f"Found {len(files)} files to rename.")
 
     current_number = start_number
     renamed = []
@@ -36,53 +33,30 @@ def number_files_in_folder(folder_path, start_number=1):
             renamed.append(f"Renamed: '{old_filename}' -> '{new_filename}'")
             current_number += 1
         except Exception as e:
-            messagebox.showerror(
-                "Error", f"Could not rename '{old_filename}'. Error: {e}"
-            )
+            st.error(f"Could not rename '{old_filename}'. Error: {e}")
 
     if renamed:
-        messagebox.showinfo("Success", "Renaming process complete!")
-        # To show details, you can add a text box, but for now, just success
+        st.success("Renaming process complete!")
+        for msg in renamed:
+            st.write(msg)
 
 
-root = tk.Tk()
-root.title("File Renamer")
-root.geometry("400x300")
+st.title("File Renamer")
 
-folder_path = tk.StringVar()
+st.write(
+    "Enter the folder path where you want to rename the files. To get the path, you can drag the folder to a text editor or copy it from file explorer."
+)
+
+folder_path = st.text_input("Enter the folder path:")
+
 start_number = 1
-confirm = tk.BooleanVar()
 
-ttk.Label(root, text="Select Folder:").pack(pady=5)
-entry = ttk.Entry(root, textvariable=folder_path, width=50)
-entry.pack()
+confirm = st.checkbox("Is it okay to rename the files?")
 
-
-def browse():
-    path = filedialog.askdirectory()
-    if path:
-        folder_path.set(path)
-
-
-ttk.Button(root, text="Browse", command=browse).pack(pady=5)
-
-check = ttk.Checkbutton(root, text="Is it okay to rename the files?", variable=confirm)
-check.pack(pady=10)
-
-
-def rename():
-    if not confirm.get():
-        messagebox.showerror(
-            "Error", "Please confirm that it's okay to rename the files."
-        )
-        return
-    path = folder_path.get()
-    if not path:
-        messagebox.showerror("Error", "Please select a folder.")
-        return
-    number_files_in_folder(path, start_number)
-
-
-ttk.Button(root, text="Rename Files", command=rename).pack(pady=10)
-
-root.mainloop()
+if st.button("Rename Files"):
+    if not confirm:
+        st.error("Please confirm that it's okay to rename the files.")
+    elif folder_path:
+        number_files_in_folder(folder_path, int(start_number))
+    else:
+        st.error("Please enter a folder path.")
